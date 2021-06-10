@@ -5,13 +5,11 @@ pub mod handler {
         use crate::{domain, use_case};
 
         pub async fn get_all() -> impl Responder {
-            println!("get_all");
             HttpResponse::Ok().json(use_case::TaskUseCase::new().get_all())
         }
 
-        pub async fn get_by_id(web::Path(id): web::Path<u32>) -> impl Responder {
-            println!("get_todo");
-            let task: Option<domain::Task> = use_case::TaskUseCase::new().get_by_id(id);
+        pub async fn get_by_id(web::Path(id): web::Path<i64>) -> impl Responder {
+            let task: Option<domain::task::Task> = use_case::TaskUseCase::new().get_by_id(id);
             if task.is_some() {
                 HttpResponse::Ok().json(task.unwrap())
             } else {
@@ -19,8 +17,7 @@ pub mod handler {
             }
         }
 
-        pub async fn create_task(task: web::Json<domain::Task>) -> impl Responder {
-            println!("post_todo");
+        pub async fn create_task(task: web::Json<domain::task::NewTask>) -> impl Responder {
             use_case::TaskUseCase::new().create_task(task.content.clone());
             HttpResponse::Created().finish()
         }

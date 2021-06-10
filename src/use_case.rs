@@ -1,11 +1,11 @@
-use crate::{domain, infrastructure::in_memory, repository};
+use crate::{domain, infrastructure::persistence, repository};
 
 pub trait ITaskUseCase {
-    fn get_all(&mut self) -> &Vec<domain::Task>;
+    fn get_all(&mut self) -> Vec<domain::task::Task>;
 
-    fn get_by_id(&mut self, id: u32) -> Option<domain::Task>;
+    fn get_by_id(&mut self, id: i64) -> Option<domain::task::Task>;
 
-    fn create_task(&mut self, content: String) -> &domain::Task;
+    fn create_task(&mut self, content: String) -> domain::task::NewTask;
 }
 
 pub struct TaskUseCase {
@@ -14,20 +14,20 @@ pub struct TaskUseCase {
 
 impl TaskUseCase {
     pub fn new() -> Box<dyn ITaskUseCase> {
-        Box::new(TaskUseCase { task_repository: in_memory::task::TaskInMemory::new() })
+        Box::new(TaskUseCase { task_repository: persistence::task::TaskPersistence::new() })
     }
 }
 
 impl ITaskUseCase for TaskUseCase {
-    fn get_all(&mut self) -> &Vec<domain::Task> {
+    fn get_all(&mut self) -> Vec<domain::task::Task> {
         self.task_repository.get_all()
     }
 
-    fn get_by_id(&mut self, id: u32) -> Option<domain::Task> {
+    fn get_by_id(&mut self, id: i64) -> Option<domain::task::Task> {
         self.task_repository.get_by_id(id)
     }
 
-    fn create_task(&mut self, content: String) -> &domain::Task {
+    fn create_task(&mut self, content: String) -> domain::task::NewTask {
         self.task_repository.create_task(content)
     }
 }
